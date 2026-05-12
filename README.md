@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MedCare Clinic — Doctor Website
 
-## Getting Started
+Production-ready, SEO-optimized clinic website with a built-in admin panel.
+Every piece of public content (clinic name, hours, doctors, services, blog,
+banners, popups, testimonials) is editable from the admin panel — no code
+changes needed.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Next.js 14** (App Router, RSC, ISR) — SSG/SSR for fast first paint + SEO
+- **TypeScript** — type safety end-to-end
+- **Tailwind CSS** + custom design tokens — the design from the prototype is
+  preserved verbatim in `src/app/globals.css`
+- **Supabase** — Postgres + Auth + Storage (free tier)
+- **Vercel** — hosting (free hobby tier, custom domain)
+
+Total monthly cost on free tiers: **$0** (excluding the domain you already own).
+
+## Project layout
+
+```
+src/
+├── app/
+│   ├── (public)/             public pages
+│   │   ├── page.tsx          home
+│   │   ├── about/page.tsx
+│   │   ├── doctors/page.tsx
+│   │   ├── services/page.tsx
+│   │   ├── blog/page.tsx
+│   │   ├── blog/[slug]/page.tsx
+│   │   └── contact/page.tsx
+│   ├── admin/                admin panel (auth-gated)
+│   ├── api/                  route handlers (uploads, revalidation)
+│   ├── layout.tsx            root layout
+│   ├── sitemap.ts            dynamic sitemap
+│   └── robots.ts             robots.txt
+├── components/
+│   ├── public/               nav, footer, hero, banner, popup, etc.
+│   └── admin/                admin UI bits
+└── lib/
+    ├── supabase/             server + client + admin clients
+    ├── data.ts               typed data fetchers
+    └── auth.ts               session helpers
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup (first time)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Create a free Supabase project at https://supabase.com
+2. Copy `.env.example` → `.env.local` and fill in:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `NEXT_PUBLIC_SITE_URL` (your final domain)
+3. In the Supabase SQL editor, run [`supabase/schema.sql`](./supabase/schema.sql)
+4. In Supabase → Storage, create a public bucket named `media`
+5. Run the seed: paste [`supabase/seed.sql`](./supabase/seed.sql) into the SQL editor
+6. Create your admin user in Supabase → Authentication → Users (invite by email),
+   then run `insert into admins (id) values ('<user-uuid>');`
+7. `npm run dev` → http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Local development
 
-## Learn More
+```bash
+npm run dev      # start dev server
+npm run build    # production build
+npm run start    # run prod build locally
+```
 
-To learn more about Next.js, take a look at the following resources:
+Admin panel: `/admin/login`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+See [DEPLOYMENT.md](./DEPLOYMENT.md). TL;DR: push to GitHub → import to
+Vercel → paste env vars → point your domain at Vercel.
 
-## Deploy on Vercel
+## What's customizable from the admin panel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Clinic name, phone, email, address, emergency text
+- Weekly hours (per-day open/close, mark days as Closed)
+- Doctors (CRUD + photo upload + per-day schedule + status)
+- Services (CRUD with icons + tags)
+- Blog posts (Markdown body + cover image)
+- Top announcement banner (text + urgent flag + on/off)
+- Popup alerts (title + body + on/off — visitors must dismiss before browsing)
+- Testimonials (CRUD)
+- Holiday/closure overrides
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## SEO
+
+- Per-page metadata (title, description, OG, Twitter)
+- JSON-LD structured data (`MedicalClinic`, `Physician`, `Article`)
+- Auto sitemap.xml + robots.txt
+- ISR with revalidation on admin saves
+- Optimized images (next/image)
+- Preloaded fonts, lazy hero illustrations
+
+## Other docs
+
+- [ARCHITECTURE.md](./ARCHITECTURE.md) — system design + data flow
+- [MEMORY.md](./MEMORY.md) — context for future Claude sessions
+- [LESSONS_LEARNED.md](./LESSONS_LEARNED.md) — running log of errors & fixes
+- [DEPLOYMENT.md](./DEPLOYMENT.md) — step-by-step launch guide
