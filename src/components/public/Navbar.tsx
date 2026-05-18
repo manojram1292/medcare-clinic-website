@@ -5,12 +5,13 @@ import { useEffect, useRef, useState } from 'react';
 import { CrossIcon } from './Icons';
 
 const links = [
-  { label: 'Home',        href: '/' },
-  { label: 'About',       href: '/about' },
-  { label: 'Doctors',     href: '/doctors' },
-  { label: 'Services',    href: '/services' },
-  { label: 'Health Blog', href: '/blog' },
-  { label: 'Contact',     href: '/contact' },
+  { label: 'Home',         href: '/' },
+  { label: 'About',        href: '/about' },
+  { label: 'Doctors',      href: '/doctors' },
+  { label: 'Services',     href: '/services' },
+  { label: 'Patient Hub',  href: '/patient-hub' },
+  { label: 'Blog',         href: '/blog' },
+  { label: 'Contact',      href: '/contact' },
 ];
 
 export default function Navbar({ clinicName, tagline }: { clinicName: string; tagline: string }) {

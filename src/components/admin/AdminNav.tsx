@@ -3,29 +3,42 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { logoutAction } from '@/app/admin/login/actions';
 import { CrossIcon } from '@/components/public/Icons';
+import { ROLE_LABEL, type Resource, type Role } from '@/lib/permissions';
 
-const items = [
-  { href: '/admin',                 label: 'Dashboard',     icon: '📊' },
-  { href: '/admin/clinic',          label: 'Clinic Info',   icon: '🏥' },
-  { href: '/admin/hours',           label: 'Hours',         icon: '🕒' },
-  { href: '/admin/doctors',         label: 'Doctors',       icon: '👩‍⚕️' },
-  { href: '/admin/services',        label: 'Services',      icon: '🩺' },
-  { href: '/admin/faqs',            label: 'FAQs',          icon: '❓' },
-  { href: '/admin/blog',            label: 'Blog',          icon: '✍️' },
-  { href: '/admin/announcements',   label: 'Banner',        icon: '📣' },
-  { href: '/admin/popups',          label: 'Popup Alert',   icon: '⚠️' },
-  { href: '/admin/testimonials',    label: 'Testimonials',  icon: '💬' },
+type Item = { href: string; label: string; icon: string; resource: Resource };
+
+const ALL_ITEMS: Item[] = [
+  { href: '/admin',                 label: 'Dashboard',     icon: '📊', resource: 'dashboard' },
+  { href: '/admin/clinic',          label: 'Clinic Info',   icon: '🏥', resource: 'clinic' },
+  { href: '/admin/hours',           label: 'Hours',         icon: '🕒', resource: 'hours' },
+  { href: '/admin/doctors',         label: 'Doctors',       icon: '👩‍⚕️', resource: 'doctors' },
+  { href: '/admin/services',        label: 'Services',      icon: '🩺', resource: 'services' },
+  { href: '/admin/faqs',            label: 'FAQs',          icon: '❓', resource: 'faqs' },
+  { href: '/admin/patient-hub',     label: 'Patient Hub',   icon: '📚', resource: 'patient_hub' },
+  { href: '/admin/blog',            label: 'Blog',          icon: '✍️', resource: 'blog' },
+  { href: '/admin/announcements',   label: 'Banner',        icon: '📣', resource: 'announcements' },
+  { href: '/admin/popups',          label: 'Popup Alert',   icon: '⚠️', resource: 'popups' },
+  { href: '/admin/testimonials',    label: 'Testimonials',  icon: '💬', resource: 'testimonials' },
+  { href: '/admin/users',           label: 'Users',         icon: '👥', resource: 'users' },
+  { href: '/admin/account',         label: 'My account',    icon: '🔐', resource: 'account' },
 ];
 
-export default function AdminNav() {
+export default function AdminNav({
+  role, email, allowed,
+}: {
+  role: Role;
+  email: string | null;
+  allowed: Resource[];
+}) {
   const path = usePathname();
+  const items = ALL_ITEMS.filter((it) => allowed.includes(it.resource));
   return (
     <aside className="admin-side">
       <div className="admin-brand">
         <div className="admin-brand-mark"><CrossIcon /></div>
         <div>
           <div className="admin-brand-name">Admin</div>
-          <div className="admin-brand-sub">Control panel</div>
+          <div className="admin-brand-sub">{ROLE_LABEL[role]}</div>
         </div>
       </div>
       <nav className="admin-nav">
@@ -39,6 +52,12 @@ export default function AdminNav() {
         })}
       </nav>
       <div style={{ marginTop: 28, padding: '0 4px' }}>
+        {email && (
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,.45)', textAlign: 'center',
+            marginBottom: 10, wordBreak: 'break-all' }}>
+            {email}
+          </div>
+        )}
         <form action={logoutAction}>
           <button type="submit" className="btn btn-outline" style={{
             width: '100%', justifyContent: 'center',

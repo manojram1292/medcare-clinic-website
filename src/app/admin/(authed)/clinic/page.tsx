@@ -1,8 +1,10 @@
 import { Flash } from '@/components/admin/Flash';
 import { getClinic } from '@/lib/data';
+import { requireAdmin } from '@/lib/auth';
 import { saveClinic, setWaitTime, saveStats } from './actions';
 
 export default async function ClinicAdminPage({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
+  await requireAdmin('clinic');
   const c = await getClinic();
   const waitFresh = c.wait_updated_at && Date.now() - new Date(c.wait_updated_at).getTime() < 90 * 60 * 1000;
   return (

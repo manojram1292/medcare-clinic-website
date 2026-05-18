@@ -166,3 +166,63 @@ insert into public.faqs (question, answer, category, sort) values
    'For chest pain, severe difficulty breathing, sudden weakness or confusion, heavy bleeding, or any life-threatening symptom — call 911 or go directly to the nearest emergency department. For urgent but non-life-threatening issues, the ER is also the right place after our hours.',
    'Emergency', 10)
 on conflict do nothing;
+
+-- ─── PATIENT HUB seed ──────────────────────────────────────────────────────
+insert into public.patient_hub (
+  slug, title, excerpt, body, category, cover_gradient, tags, read_minutes,
+  related_links, published, featured, sort
+) values
+  ('preparing-for-a-blood-test',
+   'Preparing for a Blood Test',
+   'A short guide to fasting, hydration, medication, and what to bring on the day of your blood draw.',
+   E'## Why preparation matters\n\nSome blood tests need fasting; others don''t. A little preparation makes results more accurate and your visit faster.\n\n## The night before\n\n- **Fasting tests** (cholesterol, glucose, comprehensive metabolic panel): no food or drinks other than water for 8–12 hours.\n- **Water is fine** — drink it freely. Hydrated veins are easier to find.\n- **Medications** — take as normal unless your doctor said otherwise. If unsure, call us.\n- **Avoid alcohol** for 24 hours before any lipid test.\n\n## The morning of\n\n- Wear a short-sleeve top or one with sleeves that roll up easily.\n- Bring your **health card**, **photo ID**, and any **requisition form**.\n- Have a small snack and water ready to enjoy right after.\n\n## During the draw\n\nLet the nurse know if you feel light-headed, have ever fainted at blood draws, or prefer to lie down. We will accommodate.\n\n## After the draw\n\n- Keep the bandage on for 30 minutes.\n- Avoid heavy lifting with that arm for a few hours.\n- A small bruise is normal — it fades in a few days.\n\n## When you''ll hear back\n\nMost results return in 1–3 business days. We will call if anything needs urgent attention. Otherwise, your physician will discuss results at your next visit.',
+   'Tests & Procedures', 'bcim-1',
+   array['blood test','fasting','lab work','blood draw','phlebotomy'], 4,
+   '[{"label":"Health Canada — Blood tests","url":"https://www.canada.ca/en/health-canada.html"},{"label":"Nova Scotia Health Lab Services","url":"https://www.nshealth.ca/"}]'::jsonb,
+   true, true, 1),
+
+  ('understanding-blood-pressure',
+   'Understanding Your Blood Pressure Reading',
+   'What systolic and diastolic numbers mean, how to read your home monitor, and when to call us.',
+   E'## The two numbers\n\nBlood pressure is written as **systolic / diastolic** — for example, 120/80 mmHg.\n\n- **Systolic** (top number): the pressure when your heart beats.\n- **Diastolic** (bottom number): the pressure between beats.\n\n## What ranges mean for adults\n\n| Category | Systolic | Diastolic |\n|---|---|---|\n| Normal | < 120 | < 80 |\n| Elevated | 120–129 | < 80 |\n| High (Stage 1) | 130–139 | 80–89 |\n| High (Stage 2) | ≥ 140 | ≥ 90 |\n| Hypertensive crisis | > 180 | > 120 |\n\n## How to measure correctly at home\n\n1. Rest quietly for 5 minutes first. No coffee or exercise in the last 30 minutes.\n2. Sit upright with back supported, feet flat, arm resting at heart height.\n3. Cuff goes on bare skin, snug but not tight.\n4. Stay still and silent during the reading.\n5. Take **two readings** one minute apart and record both.\n\n## When to call us\n\n- Two consecutive readings above 140/90 over a week.\n- Headache, vision changes, or chest discomfort with high readings.\n- Any single reading above 180/120 — call us or go to the ER.\n\n## What helps lower it\n\n- Reduce salt to under 2,300 mg/day.\n- Move your body 30 minutes most days — even walking counts.\n- Limit alcohol to one drink a day or less.\n- Sleep 7–8 hours a night.\n- If your doctor prescribed medication, take it daily at the same time.',
+   'Vitals & Self-Monitoring', 'bcim-2',
+   array['blood pressure','hypertension','vitals','heart health','home monitoring'], 5,
+   '[{"label":"Hypertension Canada — Patient resources","url":"https://hypertension.ca/patients/"},{"label":"Heart & Stroke Foundation","url":"https://www.heartandstroke.ca/"}]'::jsonb,
+   true, false, 2),
+
+  ('adult-vaccine-schedule-canada',
+   'Adult Vaccine Schedule in Canada',
+   'A plain-language overview of recommended vaccines for adults living in Nova Scotia.',
+   E'## Vaccines aren''t just for kids\n\nMany adults are due for boosters or new vaccines they didn''t get as children.\n\n## Annual\n\n- **Influenza (flu)** — every fall. Available free in NS for all residents.\n\n## Every 10 years\n\n- **Tdap booster** (tetanus, diphtheria, whooping cough).\n\n## Once in a lifetime (or per schedule)\n\n- **Shingles (Shingrix)** — adults 50+. Two doses, 2–6 months apart.\n- **Pneumococcal** — adults 65+, or younger with certain conditions.\n- **HPV** — recommended up to age 26, considered up to 45 in consultation with your doctor.\n\n## Special situations\n\n- **Pregnancy** — Tdap, flu, and RSV vaccines are recommended.\n- **Chronic conditions** — additional vaccines may be needed for diabetes, kidney disease, or immunocompromised patients.\n- **Travel** — book a travel-medicine visit 4–6 weeks before departure.\n\n## Records\n\nBring your immunization record to your next appointment. Don''t have one? We can help reconstruct it.',
+   'Preventive Care', 'bcim-3',
+   array['vaccines','immunisation','flu shot','shingles','HPV','tetanus','adult care'], 4,
+   '[{"label":"NS Vaccination programs","url":"https://novascotia.ca/dhw/cdpc/vaccination.asp"},{"label":"Public Health Agency of Canada","url":"https://www.canada.ca/en/public-health.html"}]'::jsonb,
+   true, false, 3),
+
+  ('healthy-eating-on-a-budget',
+   'Healthy Eating on a Canadian Budget',
+   'Practical ways to follow Canada''s Food Guide without overspending. Tips that work for one person or a family of six.',
+   E'## Start with Canada''s plate\n\nHalf vegetables and fruits, a quarter whole grains, a quarter protein. Water as the drink of choice.\n\n## Save without losing quality\n\n- **Frozen vegetables** are picked at peak ripeness, last weeks, and cost less than fresh.\n- **Eggs, lentils, canned beans, tofu, oats** — cheap, nutritious staples.\n- **Buy whole chickens** and use the carcass for stock.\n- **Shop the perimeter** of the grocery store first.\n\n## Meal-prep one afternoon a week\n\nCook a grain (rice, quinoa, pasta), a protein, and two vegetables. Mix and match through the week with different sauces.\n\n## Resources at the clinic\n\nIf you''d like a free 30-minute consult with our team to plan meals around a medical condition (diabetes, hypertension, kidney disease), just ask at reception.',
+   'Lifestyle & Wellness', 'bcim-4',
+   array['nutrition','diet','food','budget','meal planning','healthy eating'], 4,
+   '[{"label":"Canada''s Food Guide","url":"https://food-guide.canada.ca/"},{"label":"Dietitians of Canada","url":"https://www.dietitians.ca/"}]'::jsonb,
+   true, false, 4),
+
+  ('mental-health-when-to-reach-out',
+   'Mental Health — When and How to Reach Out',
+   'Stress, anxiety, and low mood are real medical concerns. Here''s how to know when it''s time to talk to us — and what help is available.',
+   E'## You don''t have to be in crisis to ask for help\n\nMild persistent symptoms still affect health. The sooner we address them, the better the outcome.\n\n## Common signs to bring up with your physician\n\n- Feeling low or hopeless most days for two weeks or more.\n- Difficulty falling asleep, staying asleep, or sleeping much more than usual.\n- Loss of interest in things you used to enjoy.\n- Persistent worry that interrupts daily life.\n- Changes in appetite or weight.\n- Feeling on edge, restless, or overwhelmed.\n- Thoughts of self-harm — please call us or 988 immediately.\n\n## What a visit looks like\n\nWe listen. We talk about what''s going on at home, work, school. We discuss options together — talk therapy, lifestyle changes, medication, or a combination. There is no rush, no judgment.\n\n## 24/7 crisis support\n\n- **988** — Suicide Crisis Helpline (Canada-wide, free, in English & French)\n- **NS Mental Health Crisis Line**: 1-888-429-8167\n- **Kids Help Phone**: 1-800-668-6868 or text CONNECT to 686868',
+   'Mental Wellness', 'bcim-5',
+   array['mental health','depression','anxiety','stress','crisis support','therapy'], 5,
+   '[{"label":"988 Suicide Crisis Helpline","url":"https://988.ca/"},{"label":"NS Mental Health & Addictions","url":"https://mha.nshealth.ca/"},{"label":"Wellness Together Canada","url":"https://www.wellnesstogether.ca/"}]'::jsonb,
+   true, false, 5),
+
+  ('trusted-external-resources',
+   'Trusted External Health Resources',
+   'A curated list of evidence-based Canadian and international health websites we recommend to patients.',
+   E'## Why this list exists\n\nThe internet has a lot of health information — much of it inaccurate. These are the sources we trust and use ourselves.\n\n## General Canadian health\n\n- **Government of Canada — Health**: official guidance on illness, medication, vaccines, travel health.\n- **Health Canada**: drug safety alerts, food and product recalls.\n- **Nova Scotia Health**: provincial services, clinic locator, prescription assistance.\n\n## Condition-specific\n\n- **Diabetes Canada** — meal plans, monitoring guides.\n- **Heart & Stroke Foundation** — risk calculator, recovery resources.\n- **Canadian Cancer Society** — screening guides, support programs.\n- **Lung Health Foundation** — asthma, COPD, smoking cessation.\n- **Arthritis Society Canada** — exercise programs, pain management.\n\n## Mental wellness\n\n- **Wellness Together Canada** — free 24/7 counselling.\n- **CAMH** — Centre for Addiction and Mental Health, patient education library.\n\n## Find a specialist or service\n\n- **211 Nova Scotia** — community resources, food banks, transportation, housing.\n- **Health Standards Organization** — find accredited clinics.\n\nIf there''s a topic you want us to add to this list, mention it on your next visit.',
+   'External Resources', 'bcim-6',
+   array['resources','external links','health information','government','canada','nova scotia'], 3,
+   '[{"label":"Government of Canada — Health","url":"https://www.canada.ca/en/services/health.html"},{"label":"Health Canada","url":"https://www.canada.ca/en/health-canada.html"},{"label":"Nova Scotia Health","url":"https://www.nshealth.ca/"},{"label":"Diabetes Canada","url":"https://www.diabetes.ca/"},{"label":"Heart & Stroke Foundation","url":"https://www.heartandstroke.ca/"},{"label":"Canadian Cancer Society","url":"https://www.cancer.ca/"},{"label":"Wellness Together Canada","url":"https://www.wellnesstogether.ca/"},{"label":"211 Nova Scotia","url":"https://ns.211.ca/"}]'::jsonb,
+   true, false, 6)
+on conflict (slug) do nothing;

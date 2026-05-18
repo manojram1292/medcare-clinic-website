@@ -26,6 +26,7 @@ export default function Footer({ clinic, services }: { clinic: Clinic; services:
             <Link href="/about">About</Link>
             <Link href="/doctors">Doctors</Link>
             <Link href="/services">Services</Link>
+            <Link href="/patient-hub">Patient Hub</Link>
             <Link href="/blog">Health Blog</Link>
             <Link href="/contact">Contact</Link>
           </div>

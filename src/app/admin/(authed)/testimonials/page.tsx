@@ -1,10 +1,12 @@
 import { Flash } from '@/components/admin/Flash';
 import DeleteButton from '@/components/admin/DeleteButton';
 import { getTestimonials } from '@/lib/data';
+import { requireAdmin } from '@/lib/auth';
 import { deleteTestimonial, upsertTestimonial } from './actions';
 import type { Testimonial } from '@/lib/types';
 
 export default async function TestimonialsAdmin({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
+  await requireAdmin('testimonials');
   const items = await getTestimonials();
   return (
     <>

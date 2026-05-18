@@ -708,6 +708,55 @@ html.js-ready .reveal:not(.is-visible){opacity:0;transform:translateY(18px)}
 .nf-card p{color:rgba(255,255,255,.6);font-size:16px;line-height:1.7;margin-bottom:30px;font-weight:300}
 .nf-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 
+/* ─── PATIENT HUB ──────────────────────────────────────────────── */
+.ph-search{display:flex;align-items:center;background:rgba(255,255,255,.96);border-radius:14px;padding:6px 8px 6px 16px;box-shadow:0 10px 36px rgba(0,0,0,.22),0 0 0 1px rgba(255,255,255,.05);position:relative}
+.ph-search-icon{color:var(--text-3);flex-shrink:0;margin-right:10px}
+.ph-search input{flex:1;border:0;background:transparent;outline:none;font:inherit;font-family:var(--font-sans);font-size:15px;color:var(--text-1);padding:11px 4px;min-width:0}
+.ph-search input::placeholder{color:var(--text-3);font-weight:400}
+.ph-search input::-webkit-search-cancel-button{display:none}
+.ph-search-clear{flex-shrink:0;background:none;border:0;color:var(--text-3);font-size:22px;line-height:1;padding:0 8px;cursor:pointer;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;transition:background .2s,color .2s}
+.ph-search-clear:hover{background:var(--cream);color:var(--navy)}
+.ph-search-submit{flex-shrink:0;background:var(--navy);color:#fff;border:0;padding:10px 18px;border-radius:10px;font:inherit;font-weight:600;font-size:13.5px;cursor:pointer;transition:background .2s}
+.ph-search-submit:hover{background:var(--navy-soft)}
+
+.ph-cat-pills{display:flex;flex-wrap:wrap;gap:8px}
+.ph-cat-pill{display:inline-flex;align-items:center;padding:8px 16px;border-radius:24px;background:var(--white);border:1px solid var(--border);color:var(--text-2);text-decoration:none;font-size:13px;font-weight:500;transition:border-color .2s,background .2s,color .2s,transform .2s}
+.ph-cat-pill:hover{border-color:var(--teal);background:var(--teal-pale);color:var(--teal-deep);transform:translateY(-1px)}
+.ph-cat-pill-active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.ph-cat-pill-active:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+.ph-tag-inline{font-size:12px;color:var(--text-3);background:var(--cream);padding:2px 8px;border-radius:6px;font-weight:500}
+
+.ph-related{margin:48px 0 0;padding:24px 28px;background:var(--cream);border-radius:var(--r-lg);border:1px solid var(--border-light)}
+.ph-related h3{font-family:var(--font-serif);font-size:20px;font-weight:700;color:var(--navy);margin-bottom:12px}
+.ph-related ul{list-style:none;padding:0;margin:0}
+.ph-related li{border-bottom:1px solid var(--border-light)}
+.ph-related li:last-child{border-bottom:none}
+.ph-related a{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;color:var(--navy);text-decoration:none;font-weight:500;font-size:14.5px;transition:color .18s}
+.ph-related a:hover{color:var(--teal-deep)}
+.ph-related a svg{color:var(--text-3);transition:color .18s,transform .18s;flex-shrink:0}
+.ph-related a:hover svg{color:var(--teal);transform:translate(2px,-2px)}
+.ph-related-note{margin-top:14px;font-size:12.5px;color:var(--text-3);line-height:1.55}
+
+@media(max-width:560px){
+  .ph-search{padding:4px 6px 4px 12px}
+  .ph-search-submit{padding:8px 12px;font-size:12.5px}
+  .ph-related{padding:20px}
+}
+
+/* ─── ADMIN PATIENT HUB form polish ─────────────────────────────── */
+.ph-link-row{display:grid;grid-template-columns:1fr 2fr auto;gap:8px;margin-bottom:8px;align-items:center}
+@media(max-width:760px){.ph-link-row{grid-template-columns:1fr}}
+.ph-link-row .btn-icon{background:none;border:0;cursor:pointer;color:var(--text-3);font-size:18px;padding:8px;border-radius:6px;transition:color .2s,background .2s}
+.ph-link-row .btn-icon:hover{color:#DC2626;background:#FEF2F2}
+
+/* ─── ROLE BADGES ──────────────────────────────────────────────── */
+.role-badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:12px;font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.role-owner{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A}
+.role-manager{background:#DBEAFE;color:#1E40AF;border:1px solid #BFDBFE}
+.role-receptionist{background:#F3E8FF;color:#6B21A8;border:1px solid #E9D5FF}
+.role-editor{background:#D1FAE5;color:#065F46;border:1px solid #A7F3D0}
+
 /* ─── PRINT ───────────────────────────────────────────────────── */
 @media print {
   nav.site-nav,.ann,footer.site-footer,.popup-overlay,.hero-actions,.doc-hero-actions,.skip-link,.btn,.btn-hero-primary,.btn-hero-ghost{display:none !important}

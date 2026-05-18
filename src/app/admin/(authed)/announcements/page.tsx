@@ -1,8 +1,10 @@
 import { Flash } from '@/components/admin/Flash';
 import { getAnnouncement } from '@/lib/data';
+import { requireAdmin } from '@/lib/auth';
 import { saveAnnouncement } from './actions';
 
 export default async function AnnouncementsAdmin({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
+  await requireAdmin('announcements');
   const a = await getAnnouncement();
   return (
     <>

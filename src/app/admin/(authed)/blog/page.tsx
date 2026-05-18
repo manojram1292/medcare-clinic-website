@@ -2,9 +2,11 @@ import Link from 'next/link';
 import { Flash } from '@/components/admin/Flash';
 import DeleteButton from '@/components/admin/DeleteButton';
 import { getAuthors, getPosts } from '@/lib/data';
+import { requireAdmin } from '@/lib/auth';
 import { deletePost, upsertAuthor } from './actions';
 
 export default async function BlogAdmin({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
+  await requireAdmin('blog');
   const [posts, authors] = await Promise.all([getPosts(), getAuthors()]);
   return (
     <>

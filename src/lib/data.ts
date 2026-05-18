@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import type {
   Announcement, BlogPost, Clinic, Doctor, Faq, Hours, PopupAlert,
-  Service, Testimonial, Author,
+  Service, Testimonial, Author, PatientHubArticle,
 } from './types';
 
 const FALLBACK_CLINIC: Clinic = {
@@ -149,6 +149,32 @@ export async function getPopup(): Promise<PopupAlert> {
   const supabase = createClient();
   const { data } = await supabase.from('popup_alert').select('*').eq('id', 1).maybeSingle();
   return (data as PopupAlert | null) ?? fallback;
+}
+
+export async function getPatientHubArticles(opts: { onlyPublished?: boolean } = {}): Promise<PatientHubArticle[]> {
+  if (!isConfigured()) return [];
+  const supabase = createClient();
+  let q = supabase.from('patient_hub').select('*').order('sort', { ascending: true }).order('created_at', { ascending: false });
+  if (opts.onlyPublished) q = q.eq('published', true);
+  const { data } = await q;
+  return (data ?? []) as PatientHubArticle[];
+}
+
+export async function getPatientHubBySlug(slug: string): Promise<PatientHubArticle | null> {
+  if (!isConfigured()) return null;
+  const supabase = createClient();
+  const { data } = await supabase.from('patient_hub').select('*').eq('slug', slug).maybeSingle();
+  return (data as PatientHubArticle | null) ?? null;
+}
+
+export async function searchPatientHub(query: string): Promise<PatientHubArticle[]> {
+  if (!isConfigured()) return [];
+  const trimmed = query.trim();
+  if (!trimmed) return [];
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc('search_patient_hub', { q: trimmed });
+  if (error) return [];
+  return (data ?? []) as PatientHubArticle[];
 }
 
 export async function isAdmin(): Promise<boolean> {

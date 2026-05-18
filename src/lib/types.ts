@@ -127,6 +127,30 @@ export type PopupAlert = {
   version: number;
 };
 
+export type PatientHubLink = {
+  label: string;
+  url: string;
+};
+
+export type PatientHubArticle = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  category: string;
+  cover_url: string | null;
+  cover_gradient: string;
+  related_links: PatientHubLink[];
+  tags: string[];
+  read_minutes: number;
+  published: boolean;
+  featured: boolean;
+  sort: number;
+  created_at: string;
+  updated_at: string;
+};
+
 export const DAY_NAMES = [
   'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday',
 ] as const;

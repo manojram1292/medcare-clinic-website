@@ -1,8 +1,10 @@
 import { Flash } from '@/components/admin/Flash';
 import { getHours } from '@/lib/data';
+import { requireAdmin } from '@/lib/auth';
 import { saveHours } from './actions';
 
 export default async function HoursAdmin({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
+  await requireAdmin('hours');
   const hours = await getHours();
   return (
     <>

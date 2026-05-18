@@ -3,9 +3,11 @@ import Image from 'next/image';
 import { Flash } from '@/components/admin/Flash';
 import DeleteButton from '@/components/admin/DeleteButton';
 import { getDoctors } from '@/lib/data';
+import { requireAdmin } from '@/lib/auth';
 import { deleteDoctor } from './actions';
 
 export default async function DoctorsAdmin({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
+  await requireAdmin('doctors');
   const doctors = await getDoctors();
   return (
     <>

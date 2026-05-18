@@ -1,9 +1,11 @@
 import { Flash } from '@/components/admin/Flash';
 import DeleteButton from '@/components/admin/DeleteButton';
 import { getServices } from '@/lib/data';
+import { requireAdmin } from '@/lib/auth';
 import { deleteService, upsertService } from './actions';
 
 export default async function ServicesAdmin({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
+  await requireAdmin('services');
   const services = await getServices();
   return (
     <>

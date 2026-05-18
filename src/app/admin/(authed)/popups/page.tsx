@@ -1,8 +1,10 @@
 import { Flash } from '@/components/admin/Flash';
 import { getPopup } from '@/lib/data';
+import { requireAdmin } from '@/lib/auth';
 import { savePopup } from './actions';
 
 export default async function PopupsAdmin({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
+  await requireAdmin('popups');
   const p = await getPopup();
   return (
     <>

@@ -1,10 +1,12 @@
 import { Flash } from '@/components/admin/Flash';
 import DeleteButton from '@/components/admin/DeleteButton';
 import { getFaqs } from '@/lib/data';
+import { requireAdmin } from '@/lib/auth';
 import { deleteFaq, upsertFaq } from './actions';
 import type { Faq } from '@/lib/types';
 
 export default async function FaqsAdmin({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
+  await requireAdmin('faqs');
   const items = await getFaqs();
   return (
     <>
