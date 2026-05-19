@@ -1,7 +1,7 @@
 import { Flash } from '@/components/admin/Flash';
 import { getPopup } from '@/lib/data';
 import { requireAdmin } from '@/lib/auth';
-import { savePopup } from './actions';
+import { clearPopup, savePopup } from './actions';
 
 export default async function PopupsAdmin({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
   await requireAdmin('popups');
@@ -14,13 +14,30 @@ export default async function PopupsAdmin({ searchParams }: { searchParams: { ok
         unless you tick &ldquo;force re-show&rdquo; below.
       </p>
       <Flash ok={searchParams.ok ? 'Saved.' : null} err={searchParams.err ?? null} />
+
+      <div className="admin-card" style={{ borderLeft: p.active ? '3px solid #DC2626' : '3px solid var(--border)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <div>
+            <strong style={{ color: 'var(--navy)' }}>Current status:</strong>{' '}
+            <span style={{ color: p.active ? '#DC2626' : 'var(--text-3)', fontWeight: 600 }}>
+              {p.active ? `Active${p.urgent ? ' · Urgent' : ''} — visitors see this on every page` : 'Inactive — not shown to visitors'}
+            </span>
+          </div>
+          {p.active && (
+            <form action={clearPopup}>
+              <button className="btn btn-outline" type="submit">Turn off &amp; clear</button>
+            </form>
+          )}
+        </div>
+      </div>
+
       <form action={savePopup} className="admin-card">
         <div className="form-group">
-          <label className="form-label">Title</label>
+          <label className="form-label">Title <span style={{ color: 'var(--text-3)', fontWeight: 400 }}>(required if Active is on)</span></label>
           <input className="form-input" name="title" defaultValue={p.title} maxLength={120} />
         </div>
         <div className="form-group">
-          <label className="form-label">Body</label>
+          <label className="form-label">Body <span style={{ color: 'var(--text-3)', fontWeight: 400 }}>(required if Active is on)</span></label>
           <textarea className="form-input form-textarea" name="body"
             defaultValue={p.body} maxLength={1200} style={{ minHeight: 140 }} />
         </div>
@@ -52,6 +69,10 @@ export default async function PopupsAdmin({ searchParams }: { searchParams: { ok
         <div style={{ marginTop: 18 }}>
           <button className="btn btn-navy btn-lg">Save</button>
         </div>
+        <p style={{ marginTop: 14, fontSize: 12.5, color: 'var(--text-3)' }}>
+          Tip: to remove the popup completely, click <strong>Turn off &amp; clear</strong> above —
+          or untick <em>Active</em> and clear the body, then Save.
+        </p>
       </form>
     </>
   );

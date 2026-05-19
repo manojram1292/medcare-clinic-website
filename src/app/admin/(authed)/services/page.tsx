@@ -1,5 +1,6 @@
 import { Flash } from '@/components/admin/Flash';
 import DeleteButton from '@/components/admin/DeleteButton';
+import EmojiPicker from '@/components/admin/EmojiPicker';
 import { getServices } from '@/lib/data';
 import { requireAdmin } from '@/lib/auth';
 import { deleteService, upsertService } from './actions';
@@ -57,8 +58,8 @@ function ServiceForm({ service }: { service?: ServiceLike }) {
           <input className="form-input" name="name" defaultValue={service?.name} required />
         </div>
         <div className="form-group">
-          <label className="form-label">Icon (emoji)</label>
-          <input className="form-input" name="icon" defaultValue={service?.icon ?? '🏥'} maxLength={4} />
+          <label className="form-label">Icon</label>
+          <EmojiPicker name="icon" defaultValue={service?.icon ?? '🏥'} />
         </div>
       </div>
       <div className="form-group">
