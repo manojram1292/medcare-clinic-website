@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/auth';
 
 export async function upsertFaq(formData: FormData) {
-  await requireAdmin();
+  await requireAdmin('faqs');
   const id = String(formData.get('id') || '').trim();
   const question = String(formData.get('question') || '').trim();
   const answer = String(formData.get('answer') || '').trim();
@@ -25,7 +25,7 @@ export async function upsertFaq(formData: FormData) {
 }
 
 export async function deleteFaq(formData: FormData) {
-  await requireAdmin();
+  await requireAdmin('faqs');
   const id = String(formData.get('id') || '').trim();
   if (!id) redirect('/admin/faqs?err=Missing+id');
   const supabase = createClient();

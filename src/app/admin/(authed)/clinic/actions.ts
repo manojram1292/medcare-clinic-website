@@ -27,7 +27,7 @@ const Schema = z.object({
 });
 
 export async function saveClinic(formData: FormData) {
-  await requireAdmin();
+  await requireAdmin('clinic');
   const obj: Record<string, string> = {};
   for (const k of Object.keys(Schema.shape)) obj[k] = String(formData.get(k) ?? '');
   const parsed = Schema.safeParse(obj);
@@ -53,7 +53,7 @@ export async function saveClinic(formData: FormData) {
 }
 
 export async function saveStats(formData: FormData) {
-  await requireAdmin();
+  await requireAdmin('clinic');
   const supabase = createClient();
   const stats: { value: string; suffix: string; label: string }[] = [];
   for (let i = 0; i < 6; i++) {
@@ -71,7 +71,7 @@ export async function saveStats(formData: FormData) {
 }
 
 export async function setWaitTime(formData: FormData) {
-  await requireAdmin();
+  await requireAdmin('wait_time');
   const minsRaw = String(formData.get('current_wait_minutes') || '').trim();
   const supabase = createClient();
   if (minsRaw === '' || minsRaw === 'clear') {

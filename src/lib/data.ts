@@ -103,10 +103,17 @@ export async function getPosts(opts: { onlyPublished?: boolean } = {}): Promise<
   return (data ?? []) as BlogPost[];
 }
 
+// Public path — only returns published posts. Unpublished posts are edited
+// via the admin path which reads the table directly.
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   if (!isConfigured()) return null;
   const supabase = createClient();
-  const { data } = await supabase.from('blog_posts').select('*').eq('slug', slug).maybeSingle();
+  const { data } = await supabase
+    .from('blog_posts')
+    .select('*')
+    .eq('slug', slug)
+    .eq('published', true)
+    .maybeSingle();
   return (data as BlogPost | null) ?? null;
 }
 
@@ -163,7 +170,16 @@ export async function getPatientHubArticles(opts: { onlyPublished?: boolean } = 
 export async function getPatientHubBySlug(slug: string): Promise<PatientHubArticle | null> {
   if (!isConfigured()) return null;
   const supabase = createClient();
-  const { data } = await supabase.from('patient_hub').select('*').eq('slug', slug).maybeSingle();
+  // Filter `published = true` explicitly: RLS would block unpublished rows
+  // for anon, but admins reading via this fetcher should also get nothing
+  // for public consumption paths. The admin-only edit page uses a separate
+  // fetch path against the table directly.
+  const { data } = await supabase
+    .from('patient_hub')
+    .select('*')
+    .eq('slug', slug)
+    .eq('published', true)
+    .maybeSingle();
   return (data as PatientHubArticle | null) ?? null;
 }
 

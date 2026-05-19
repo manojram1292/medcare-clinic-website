@@ -21,7 +21,7 @@ const Schema = z.object({
 });
 
 export async function upsertDoctor(formData: FormData) {
-  await requireAdmin();
+  await requireAdmin('doctors');
   const id = String(formData.get('id') || '').trim();
   const obj = {
     name: String(formData.get('name') || ''),
@@ -100,7 +100,7 @@ export async function upsertDoctor(formData: FormData) {
 }
 
 export async function deleteDoctor(formData: FormData) {
-  await requireAdmin();
+  await requireAdmin('doctors');
   const id = String(formData.get('id') || '').trim();
   if (!id) redirect('/admin/doctors?err=Missing+id');
   const supabase = createClient();

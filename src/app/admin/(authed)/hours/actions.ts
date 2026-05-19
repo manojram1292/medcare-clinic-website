@@ -15,7 +15,7 @@ function normaliseTime(s: string | null): string | null {
 }
 
 export async function saveHours(formData: FormData) {
-  await requireAdmin();
+  await requireAdmin('hours');
   const supabase = createClient();
   const updates: Array<{ day_index: number; closed: boolean; open_time: string | null;
     close_time: string | null; override_note: string | null }> = [];

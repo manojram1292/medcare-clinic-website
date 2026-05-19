@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/auth';
 
 export async function saveAnnouncement(formData: FormData) {
-  await requireAdmin();
+  await requireAdmin('announcements');
   const supabase = createClient();
   const message = String(formData.get('message') || '').trim();
   const active = formData.get('active') === 'on';

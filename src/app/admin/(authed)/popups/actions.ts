@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/auth';
 
 export async function savePopup(formData: FormData) {
-  await requireAdmin();
+  await requireAdmin('popups');
   const supabase = createClient();
   const title = String(formData.get('title') || '').trim();
   const body = String(formData.get('body') || '').trim();

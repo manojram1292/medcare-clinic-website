@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/auth';
 
 export async function upsertTestimonial(formData: FormData) {
-  await requireAdmin();
+  await requireAdmin('testimonials');
   const id = String(formData.get('id') || '').trim();
   const text = String(formData.get('text') || '').trim();
   const name = String(formData.get('name') || '').trim();
@@ -26,7 +26,7 @@ export async function upsertTestimonial(formData: FormData) {
 }
 
 export async function deleteTestimonial(formData: FormData) {
-  await requireAdmin();
+  await requireAdmin('testimonials');
   const id = String(formData.get('id') || '').trim();
   if (!id) redirect('/admin/testimonials?err=Missing+id');
   const supabase = createClient();

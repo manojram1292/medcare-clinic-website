@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { logoutAction } from '@/app/admin/login/actions';
 import { CrossIcon } from '@/components/public/Icons';
-import { ROLE_LABEL, type Resource, type Role } from '@/lib/permissions';
+import type { Resource } from '@/lib/permissions';
 
 type Item = { href: string; label: string; icon: string; resource: Resource };
 
@@ -24,9 +24,9 @@ const ALL_ITEMS: Item[] = [
 ];
 
 export default function AdminNav({
-  role, email, allowed,
+  roleLabel, email, allowed,
 }: {
-  role: Role;
+  roleLabel: string;
   email: string | null;
   allowed: Resource[];
 }) {
@@ -38,7 +38,7 @@ export default function AdminNav({
         <div className="admin-brand-mark"><CrossIcon /></div>
         <div>
           <div className="admin-brand-name">Admin</div>
-          <div className="admin-brand-sub">{ROLE_LABEL[role]}</div>
+          <div className="admin-brand-sub">{roleLabel}</div>
         </div>
       </div>
       <nav className="admin-nav">

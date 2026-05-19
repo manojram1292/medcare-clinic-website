@@ -1,6 +1,8 @@
+import 'server-only';
 import { createClient as createSupa } from '@supabase/supabase-js';
 
-// Service-role client. NEVER import this from a client component.
+// Service-role client. The 'server-only' import above causes a build-time
+// error if anything in a client bundle ever imports this module.
 export function createAdminClient() {
   return createSupa(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Image from 'next/image';
+import ImageUploadField from '@/components/admin/ImageUploadField';
 import type { Doctor } from '@/lib/types';
 import { DAY_NAMES } from '@/lib/types';
 import { upsertDoctor } from './actions';
@@ -44,17 +44,13 @@ export default function DoctorForm({ doctor }: { doctor?: Doctor }) {
 
       <div className="form-group">
         <label className="form-label">Photo</label>
-        {doctor?.photo_url && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-            <Image src={doctor.photo_url} alt="" width={64} height={64}
-              style={{ objectFit: 'cover', borderRadius: 12 }} />
-            <label style={{ fontSize: 13 }}>
-              <input type="checkbox" name="clear_photo" /> Remove photo
-            </label>
-          </div>
-        )}
-        <input type="file" name="photo" accept="image/*" />
-        <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 4 }}>JPG/PNG, max 5 MB.</div>
+        <ImageUploadField
+          name="photo"
+          currentUrl={doctor?.photo_url ?? null}
+          clearName="clear_photo"
+          recommended="800×800 jpg, under 300 KB (square portrait)"
+          helpText="Auto-resized to 1920px wide before upload. JPG/PNG accepted; output is always JPG."
+        />
       </div>
 
       <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 18, marginTop: 16, marginBottom: 12,

@@ -1,15 +1,21 @@
 import { Flash } from '@/components/admin/Flash';
 import { requireAdmin } from '@/lib/auth';
-import { ROLE_LABEL } from '@/lib/permissions';
+import { detectPreset, PRESET_LABEL } from '@/lib/permissions';
 import { changePassword } from './actions';
 
 export default async function AccountPage({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
   const user = await requireAdmin('account');
+  const presetKey = detectPreset(user);
   return (
     <>
       <h1 className="admin-h1">My account</h1>
-      <p className="admin-sub">Signed in as <strong>{user.email}</strong>. Your role is{' '}
-        <span className={`role-badge role-${user.role}`}>{ROLE_LABEL[user.role]}</span>.
+      <p className="admin-sub">Signed in as <strong>{user.email}</strong>. Permission set:{' '}
+        <span className={`role-badge role-${presetKey}`}>{PRESET_LABEL[presetKey]}</span>
+        {presetKey !== 'owner' && (
+          <span style={{ fontSize: 12, color: 'var(--text-3)', marginLeft: 8 }}>
+            ({user.permissions.size} resource{user.permissions.size === 1 ? '' : 's'})
+          </span>
+        )}
       </p>
       <Flash ok={searchParams.ok ? 'Password updated.' : null} err={searchParams.err ?? null} />
 

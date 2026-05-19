@@ -1,50 +1,58 @@
 import { Flash } from '@/components/admin/Flash';
 import DeleteButton from '@/components/admin/DeleteButton';
+import UserPermissionForm from '@/components/admin/UserPermissionForm';
 import { requireAdmin } from '@/lib/auth';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
-import { ROLE_DESCRIPTION, ROLE_LABEL, ROLES, type Role } from '@/lib/permissions';
-import { deleteAdmin, inviteAdmin, updateAdminRole } from './actions';
+import {
+  ALWAYS_ALLOWED, detectPreset, makeAdminProfile, PRESETS, PRESET_LABEL, RESOURCE_LABEL,
+  type AdminProfile, type Preset,
+} from '@/lib/permissions';
+import { deleteAdmin, inviteAdmin } from './actions';
 
-type AdminRow = { id: string; role: Role; email: string; created_at: string };
+type UserRow = {
+  profile: AdminProfile;
+  email: string;
+  created_at: string;
+};
 
 export const dynamic = 'force-dynamic';
 
 export default async function UsersAdmin({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
   const me = await requireAdmin('users');
 
-  // Get admins table
   const supabase = createClient();
-  const { data: adminsRows } = await supabase
+  const { data: rows } = await supabase
     .from('admins')
-    .select('id, role, created_at');
+    .select('id, is_owner, permissions, created_at')
+    .order('created_at', { ascending: true });
 
-  // Get matching auth.users emails via service role
   const adminClient = createAdminClient();
   const { data: usersList } = await adminClient.auth.admin.listUsers();
   const emailById = new Map<string, string>(
     (usersList?.users ?? []).map((u) => [u.id, u.email ?? '(no email)'] as [string, string]),
   );
 
-  const admins: AdminRow[] = (adminsRows ?? []).map((r) => ({
-    id: r.id as string,
-    role: (r.role ?? 'owner') as Role,
-    email: emailById.get(r.id as string) ?? '(unknown email)',
-    created_at: (r.created_at ?? '') as string,
+  const users: UserRow[] = (rows ?? []).map((r) => ({
+    profile: makeAdminProfile(r as { id: string; is_owner?: boolean | null; permissions?: string[] | null }),
+    email: emailById.get((r as { id: string }).id) ?? '(unknown email)',
+    created_at: ((r as { created_at?: string }).created_at) ?? '',
   }));
 
   return (
     <>
-      <h1 className="admin-h1">Users &amp; roles</h1>
+      <h1 className="admin-h1">Users &amp; permissions</h1>
       <p className="admin-sub">
-        Invite staff with the right level of access. Receptionists can manage hours &amp; banners;
-        editors can write content; managers can do everything except managing users.
+        Tick exactly what each staff member can do. Use a preset for a fast start,
+        then tweak individual checkboxes. Only owners can manage other users.
       </p>
       <Flash
-        ok={searchParams.ok === 'invited' ? 'Invitation sent. They\'ll receive an email to set their password.'
-          : searchParams.ok === 'updated' ? 'Role updated.'
+        ok={
+          searchParams.ok === 'invited' ? 'Invitation sent. They\'ll receive an email to set their password.'
+          : searchParams.ok === 'updated' ? 'Permissions saved.'
           : searchParams.ok === 'removed' ? 'User removed.'
-          : null}
+          : null
+        }
         err={searchParams.err ?? null}
       />
 
@@ -53,7 +61,8 @@ export default async function UsersAdmin({ searchParams }: { searchParams: { ok?
           Invite a new staff member
         </h3>
         <p style={{ fontSize: 13, color: 'var(--text-3)', marginBottom: 14 }}>
-          They&apos;ll get an email with a link to set their password, then they can sign in at <code>/admin/login</code>.
+          They&apos;ll receive a Supabase email to set their password, then they can sign in at <code>/admin/login</code>.
+          Pick a preset now — you can customise their exact permissions after they accept.
         </p>
         <form action={inviteAdmin}>
           <div className="admin-row">
@@ -63,9 +72,11 @@ export default async function UsersAdmin({ searchParams }: { searchParams: { ok?
                 placeholder="receptionist@medcareclinic.ca" autoComplete="off" />
             </div>
             <div className="form-group">
-              <label className="form-label">Role</label>
-              <select className="form-input form-select" name="role" defaultValue="receptionist">
-                {ROLES.map((r) => <option key={r} value={r}>{ROLE_LABEL[r]}</option>)}
+              <label className="form-label">Starting permission set</label>
+              <select className="form-input form-select" name="preset" defaultValue="receptionist">
+                {(Object.keys(PRESETS) as Preset[]).map((k) => (
+                  <option key={k} value={k}>{PRESET_LABEL[k]} — {PRESETS[k].description}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -73,53 +84,54 @@ export default async function UsersAdmin({ searchParams }: { searchParams: { ok?
         </form>
       </div>
 
-      <div className="admin-card">
-        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 18, marginBottom: 14, color: 'var(--navy)' }}>
-          Current staff
-        </h3>
-        <div className="admin-list" style={{ marginBottom: 0 }}>
-          {admins.map((a) => (
-            <div key={a.id} className="admin-list-item">
-              <div className="admin-thumb"><span>{(a.email[0] || '?').toUpperCase()}</span></div>
-              <div style={{ flex: 1, minWidth: 160 }}>
-                <div style={{ fontWeight: 600, color: 'var(--navy)' }}>
-                  {a.email}{a.id === me.id && <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--teal)' }}>· you</span>}
-                </div>
-                <div style={{ fontSize: 12, color: 'var(--text-3)' }}>
-                  <span className={`role-badge role-${a.role}`}>{ROLE_LABEL[a.role]}</span>
-                </div>
-              </div>
-              <form action={updateAdminRole} style={{ display: 'flex', gap: 6 }}>
-                <input type="hidden" name="id" value={a.id} />
-                <select name="role" defaultValue={a.role} className="form-input form-select"
-                  style={{ width: 160 }}>
-                  {ROLES.map((r) => <option key={r} value={r}>{ROLE_LABEL[r]}</option>)}
-                </select>
-                <button className="btn btn-outline" type="submit">Change</button>
-              </form>
-              <DeleteButton action={deleteAdmin} id={a.id}
-                confirm={`Remove ${a.email} from admins?`} />
+      <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 22, fontWeight: 700, color: 'var(--navy)',
+        marginTop: 28, marginBottom: 14 }}>
+        Current staff ({users.length})
+      </h2>
+
+      {users.map((u) => {
+        const currentPreset = detectPreset(u.profile);
+        const isMe = u.profile.id === me.id;
+        return (
+          <UserPermissionForm
+            key={u.profile.id}
+            id={u.profile.id}
+            email={u.email}
+            currentPreset={currentPreset}
+            currentLabel={PRESET_LABEL[currentPreset]}
+            isOwner={u.profile.is_owner}
+            permissions={Array.from(u.profile.permissions)}
+            isMe={isMe}
+            createdAt={u.created_at}
+            deleteAction={deleteAdmin}
+          />
+        );
+      })}
+
+      {users.length === 0 && (
+        <div style={{ padding: 28, textAlign: 'center', color: 'var(--text-3)' }}>
+          No users yet. Use the invite form above to add your first staff member.
+        </div>
+      )}
+
+      <details className="admin-card" style={{ marginTop: 28 }}>
+        <summary style={{ cursor: 'pointer', fontFamily: 'var(--font-serif)', fontSize: 16,
+          fontWeight: 700, color: 'var(--navy)' }}>
+          What each permission controls
+        </summary>
+        <div className="perm-help-grid" style={{ marginTop: 12 }}>
+          {(Object.keys(RESOURCE_LABEL) as Array<keyof typeof RESOURCE_LABEL>).map((r) => (
+            <div key={r} className="perm-help-item">
+              <strong>{RESOURCE_LABEL[r]}</strong>
+              <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--text-3)' }}>
+                {(ALWAYS_ALLOWED as readonly string[]).includes(r as string)
+                  ? '(always allowed)'
+                  : r === 'users' ? '(owner only)' : ''}
+              </span>
             </div>
           ))}
-          {admins.length === 0 && (
-            <div style={{ padding: 28, textAlign: 'center', color: 'var(--text-3)' }}>No users yet.</div>
-          )}
         </div>
-      </div>
-
-      <div className="admin-card">
-        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 16, marginBottom: 10, color: 'var(--navy)' }}>
-          What each role can do
-        </h3>
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-          {ROLES.map((r) => (
-            <li key={r} style={{ marginBottom: 12 }}>
-              <span className={`role-badge role-${r}`} style={{ marginRight: 10 }}>{ROLE_LABEL[r]}</span>
-              <span style={{ fontSize: 13.5, color: 'var(--text-2)' }}>{ROLE_DESCRIPTION[r]}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+      </details>
     </>
   );
 }

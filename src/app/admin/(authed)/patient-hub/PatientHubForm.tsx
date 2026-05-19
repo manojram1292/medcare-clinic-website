@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Image from 'next/image';
+import ImageUploadField from '@/components/admin/ImageUploadField';
 import type { PatientHubArticle } from '@/lib/types';
 import { upsertPatientHubArticle } from './actions';
 
@@ -77,19 +77,13 @@ export default function PatientHubForm({ article }: { article?: PatientHubArticl
 
       <div className="form-group">
         <label className="form-label">Cover image (optional)</label>
-        {article?.cover_url && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-            <Image src={article.cover_url} alt="" width={80} height={50}
-              style={{ objectFit: 'cover', borderRadius: 8 }} />
-            <label style={{ fontSize: 13 }}>
-              <input type="checkbox" name="clear_cover" /> Remove cover
-            </label>
-          </div>
-        )}
-        <input type="file" name="cover" accept="image/*" />
-        <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 4 }}>
-          If no image is uploaded, a coloured gradient is shown.
-        </div>
+        <ImageUploadField
+          name="cover"
+          currentUrl={article?.cover_url ?? null}
+          clearName="clear_cover"
+          recommended="1600×900 jpg, under 500 KB (16:9 widescreen)"
+          helpText="If no image is uploaded, a coloured gradient is shown. Image is auto-resized to 1920px wide before upload."
+        />
       </div>
 
       <div className="form-group">

@@ -21,7 +21,7 @@ const Schema = z.object({
 });
 
 export async function upsertPost(formData: FormData) {
-  await requireAdmin();
+  await requireAdmin('blog');
   const id = String(formData.get('id') || '').trim();
   const obj = {
     title: String(formData.get('title') || ''),
@@ -82,7 +82,7 @@ export async function upsertPost(formData: FormData) {
 }
 
 export async function deletePost(formData: FormData) {
-  await requireAdmin();
+  await requireAdmin('blog');
   const id = String(formData.get('id') || '').trim();
   if (!id) redirect('/admin/blog?err=Missing+id');
   const supabase = createClient();
@@ -93,7 +93,7 @@ export async function deletePost(formData: FormData) {
 }
 
 export async function upsertAuthor(formData: FormData) {
-  await requireAdmin();
+  await requireAdmin('blog');
   const name = String(formData.get('name') || '').trim();
   const initials = String(formData.get('initials') || '').toUpperCase().trim();
   const role = String(formData.get('role') || '').trim();

@@ -24,7 +24,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const article = await getPatientHubBySlug(params.slug);
-  if (!article) return { title: 'Not found' };
+  if (!article || !article.published) return { title: 'Not found' };
   return {
     title: article.title,
     description: article.excerpt,
