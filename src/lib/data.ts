@@ -23,6 +23,7 @@ const FALLBACK_CLINIC: Clinic = {
   about_quote:
     'Our goal is not just to treat illness, but to partner with our patients in building lifelong health.',
   google_maps_embed: null,
+  logo_url: null,
   parking_info: null,
   insurance_info: null,
   what_to_bring: null,

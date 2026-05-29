@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
-const MAX_WIDTH = 1920;
+const DEFAULT_MAX_WIDTH = 1920;
 const QUALITY = 0.82;
 const SOFT_TARGET_KB = 500;
 
@@ -12,11 +12,17 @@ type Props = {
   recommended?: string;        // e.g. "1600×900 (16:9 widescreen)"
   clearName?: string;          // checkbox name for "remove current"
   helpText?: string;
+  // Logos and other graphics with transparency should stay PNG. Photos
+  // (doctor portraits, blog covers) become JPEG for smaller files.
+  output?: 'jpeg' | 'png';
+  maxWidth?: number;           // cap the longer edge; logos can be small
+  previewBg?: string;          // checkerboard helps preview transparent logos
 };
 
 export default function ImageUploadField({
   name, currentUrl, recommended = '1600×900 jpg, under 500 KB',
-  clearName, helpText,
+  clearName, helpText, output = 'jpeg', maxWidth = DEFAULT_MAX_WIDTH,
+  previewBg,
 }: Props) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const hiddenFileRef = useRef<HTMLInputElement | null>(null);
@@ -48,8 +54,9 @@ export default function ImageUploadField({
     setBusy(true);
     setOrigKB(Math.round(file.size / 1024));
     try {
-      const { blob, width, height } = await resizeImage(file, MAX_WIDTH, QUALITY);
-      const out = new File([blob], rename(file.name), { type: 'image/jpeg' });
+      const { blob, width, height } = await resizeImage(file, maxWidth, QUALITY, output);
+      const mime = output === 'png' ? 'image/png' : 'image/jpeg';
+      const out = new File([blob], rename(file.name, output), { type: mime });
       setOutKB(Math.round(blob.size / 1024));
       setDims({ w: width, h: height });
       setPreview(URL.createObjectURL(blob));
@@ -102,7 +109,8 @@ export default function ImageUploadField({
       {preview && (
         <div className="iuf-preview">
           <Image src={preview} alt="" width={240} height={140} unoptimized
-            style={{ objectFit: 'cover', borderRadius: 8 }} />
+            className={previewBg === 'checker' ? 'iuf-checker' : undefined}
+            style={{ objectFit: 'contain', borderRadius: 8 }} />
           <div className="iuf-stats">
             <div><strong>Will upload:</strong> {dims?.w}×{dims?.h}px · {outKB} KB</div>
             {origKB != null && outKB != null && origKB > outKB && (
@@ -124,12 +132,12 @@ export default function ImageUploadField({
   );
 }
 
-function rename(orig: string): string {
+function rename(orig: string, output: 'jpeg' | 'png'): string {
   const base = orig.replace(/\.[^.]+$/, '').replace(/[^a-z0-9-]+/gi, '-').slice(0, 60) || 'image';
-  return `${base}.jpg`;
+  return `${base}.${output === 'png' ? 'png' : 'jpg'}`;
 }
 
-async function resizeImage(file: File, maxWidth: number, quality: number) {
+async function resizeImage(file: File, maxWidth: number, quality: number, output: 'jpeg' | 'png') {
   const url = URL.createObjectURL(file);
   try {
     const img = await loadImage(url);
@@ -143,11 +151,18 @@ async function resizeImage(file: File, maxWidth: number, quality: number) {
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Canvas not available in this browser.');
     ctx.imageSmoothingQuality = 'high';
+    // PNG preserves transparency; JPEG would fill it with black, so only
+    // JPEG output flattens onto a white background.
+    if (output === 'jpeg') {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+    }
     ctx.drawImage(img, 0, 0, width, height);
 
+    const mime = output === 'png' ? 'image/png' : 'image/jpeg';
     const blob: Blob = await new Promise((resolve, reject) =>
       canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Could not encode image.'))),
-        'image/jpeg', quality),
+        mime, output === 'png' ? undefined : quality),
     );
     return { blob, width, height };
   } finally {

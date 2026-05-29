@@ -18,7 +18,7 @@ export default async function PublicLayout({ children }: { children: React.React
       <a href="#main" className="skip-link">Skip to main content</a>
       <ScrollProgress />
       <AnnouncementBanner ann={ann} />
-      <Navbar clinicName={clinic.name} tagline={clinic.tagline} />
+      <Navbar clinicName={clinic.name} tagline={clinic.tagline} logoUrl={clinic.logo_url} />
       <main id="main" className="page-transition">{children}</main>
       <Footer clinic={clinic} services={services} />
       <PopupAlert popup={popup} />

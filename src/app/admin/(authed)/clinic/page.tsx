@@ -1,17 +1,66 @@
+import Image from 'next/image';
 import { Flash } from '@/components/admin/Flash';
+import ImageUploadField from '@/components/admin/ImageUploadField';
 import { getClinic } from '@/lib/data';
 import { requireAdmin } from '@/lib/auth';
-import { saveClinic, setWaitTime, saveStats } from './actions';
+import { saveClinic, setWaitTime, saveStats, saveLogo } from './actions';
 
 export default async function ClinicAdminPage({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
   await requireAdmin('clinic');
   const c = await getClinic();
   const waitFresh = c.wait_updated_at && Date.now() - new Date(c.wait_updated_at).getTime() < 90 * 60 * 1000;
+  const okMsg = searchParams.ok === 'logo' ? 'Logo updated.' : searchParams.ok ? 'Saved.' : null;
   return (
     <>
       <h1 className="admin-h1">Clinic information</h1>
       <p className="admin-sub">These fields appear across the public site — header, footer, hero, contact, FAQ.</p>
-      <Flash ok={searchParams.ok ? 'Saved.' : null} err={searchParams.err ?? null} />
+      <Flash ok={okMsg} err={searchParams.err ?? null} />
+
+      <div className="admin-card" style={{ borderLeft: '3px solid var(--teal)' }}>
+        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 18, marginBottom: 6, color: 'var(--navy)' }}>
+          Clinic logo
+        </h3>
+        <p style={{ fontSize: 13, color: 'var(--text-3)', marginBottom: 14 }}>
+          Upload your clinic logo and it replaces the default mark in the website header
+          and footer automatically. Transparent PNGs work best. If you don&apos;t upload one,
+          the default gradient cross icon is used.
+        </p>
+        <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+          <div style={{ flexShrink: 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase',
+              color: 'var(--text-3)', marginBottom: 8 }}>Currently in the header</div>
+            <div className="logo-preview-box">
+              {c.logo_url
+                ? <Image src={c.logo_url} alt="Clinic logo" width={48} height={48}
+                    style={{ objectFit: 'contain' }} />
+                : (
+                  <div className="nav-mark" aria-hidden>
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="#fff" strokeWidth="2.2"
+                      fill="none" strokeLinecap="round"><path d="M12 4v16M4 12h16" /></svg>
+                  </div>
+                )}
+              <span style={{ fontFamily: 'var(--font-serif)', fontSize: 18, fontWeight: 700, color: 'var(--navy)' }}>
+                {c.name}
+              </span>
+            </div>
+          </div>
+          <form action={saveLogo} style={{ flex: 1, minWidth: 280 }}>
+            <ImageUploadField
+              name="logo"
+              currentUrl={c.logo_url}
+              clearName="clear_logo"
+              output="png"
+              maxWidth={512}
+              previewBg="checker"
+              recommended="square or wide PNG with transparent background, ~512px, under 200 KB"
+              helpText="Saved as PNG so transparency is preserved. Click 'Save logo' after choosing."
+            />
+            <div style={{ marginTop: 12 }}>
+              <button className="btn btn-navy" type="submit">Save logo</button>
+            </div>
+          </form>
+        </div>
+      </div>
 
       <div className="admin-card" style={{ borderLeft: '3px solid var(--teal)' }}>
         <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 18, marginBottom: 6, color: 'var(--navy)' }}>

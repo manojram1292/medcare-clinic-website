@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { CrossIcon } from './Icons';
@@ -14,7 +15,7 @@ const links = [
   { label: 'Contact',      href: '/contact' },
 ];
 
-export default function Navbar({ clinicName, tagline }: { clinicName: string; tagline: string }) {
+export default function Navbar({ clinicName, tagline, logoUrl }: { clinicName: string; tagline: string; logoUrl?: string | null }) {
   const path = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mob, setMob] = useState(false);
@@ -50,7 +51,9 @@ export default function Navbar({ clinicName, tagline }: { clinicName: string; ta
     <nav className={`site-nav ${scrolled ? 'scrolled' : ''}`}>
       <div className="nav-inner">
         <Link className="nav-logo" href="/">
-          <div className="nav-mark"><CrossIcon/></div>
+          {logoUrl
+            ? <span className="nav-mark nav-mark-img"><Image src={logoUrl} alt={`${clinicName} logo`} width={40} height={40} style={{ objectFit: 'contain' }} priority /></span>
+            : <div className="nav-mark"><CrossIcon/></div>}
           <div>
             <span className="nav-name">{clinicName}</span>
             <span className="nav-sub">{tagline}</span>

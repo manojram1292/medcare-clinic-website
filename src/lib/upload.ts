@@ -5,7 +5,7 @@ const BUCKET = 'media';
 
 // Folder whitelist — prevents path traversal AND scope creep. New folders
 // require a code change.
-const ALLOWED_FOLDERS = new Set(['blog', 'doctors', 'patient-hub']);
+const ALLOWED_FOLDERS = new Set(['blog', 'doctors', 'patient-hub', 'logos']);
 
 // MIME allowlist with magic-byte sniffers. We DO NOT trust the
 // Content-Type the browser sends — files are validated by their first

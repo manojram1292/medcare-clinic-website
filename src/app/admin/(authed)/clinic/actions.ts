@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/auth';
+import { uploadImage } from '@/lib/upload';
 
 const Schema = z.object({
   name: z.string().min(1).max(120),
@@ -50,6 +51,35 @@ export async function saveClinic(formData: FormData) {
   if (error) redirect(`/admin/clinic?err=${encodeURIComponent(error.message)}`);
   revalidatePath('/', 'layout');
   redirect('/admin/clinic?ok=1');
+}
+
+export async function saveLogo(formData: FormData) {
+  await requireAdmin('clinic');
+  const supabase = createClient();
+
+  // Remove the current logo (revert to the default gradient mark)
+  if (formData.get('clear_logo') === 'on') {
+    const { error } = await supabase.from('clinic').update({ logo_url: null }).eq('id', 1);
+    if (error) redirect(`/admin/clinic?err=${encodeURIComponent(error.message)}`);
+    revalidatePath('/', 'layout');
+    redirect('/admin/clinic?ok=logo');
+  }
+
+  const file = formData.get('logo') as File | null;
+  if (!file || !(file instanceof File) || file.size === 0) {
+    redirect('/admin/clinic?err=Choose+a+logo+image+first');
+  }
+  let logo_url: string;
+  try {
+    logo_url = await uploadImage(file, 'logos');
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : 'Upload error';
+    redirect(`/admin/clinic?err=${encodeURIComponent(msg)}`);
+  }
+  const { error } = await supabase.from('clinic').update({ logo_url }).eq('id', 1);
+  if (error) redirect(`/admin/clinic?err=${encodeURIComponent(error.message)}`);
+  revalidatePath('/', 'layout');
+  redirect('/admin/clinic?ok=logo');
 }
 
 export async function saveStats(formData: FormData) {

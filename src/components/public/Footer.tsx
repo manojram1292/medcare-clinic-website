@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Clinic, Service } from '@/lib/types';
 import { CrossIcon } from './Icons';
 
@@ -9,7 +10,9 @@ export default function Footer({ clinic, services }: { clinic: Clinic; services:
         <div className="ft-top">
           <div className="ft-brand">
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-              <div className="nav-mark"><CrossIcon/></div>
+              {clinic.logo_url
+                ? <span className="nav-mark nav-mark-img"><Image src={clinic.logo_url} alt={`${clinic.name} logo`} width={40} height={40} style={{ objectFit: 'contain' }} /></span>
+                : <div className="nav-mark"><CrossIcon/></div>}
               <div>
                 <div style={{ fontFamily: 'var(--font-serif)', fontSize: 20, fontWeight: 700, color: '#fff' }}>
                   {clinic.name}
