@@ -7,7 +7,7 @@ import EmergencyDecisionCard from '@/components/public/EmergencyDecisionCard';
 import FaqSection from '@/components/public/FaqSection';
 import LanguagesBar from '@/components/public/LanguagesBar';
 import WaitTimeIndicator from '@/components/public/WaitTimeIndicator';
-import { safeMapsEmbed } from '@/lib/safe-url';
+import { mapsEmbedSrc } from '@/lib/safe-url';
 
 export const revalidate = 60;
 export const metadata: Metadata = { title: 'Contact', description: 'Reach the clinic — phone, email, address, hours.' };
@@ -62,8 +62,9 @@ export default async function ContactPage() {
           </div>
           <div className="contact-bottom-grid">
             <div className="map-ph" style={{ height: 360 }}>
-              {safeMapsEmbed(clinic.google_maps_embed) ? (
-                <iframe src={safeMapsEmbed(clinic.google_maps_embed)!} loading="lazy" allowFullScreen
+              {mapsEmbedSrc({ embed: clinic.google_maps_embed, address: clinic.address }) ? (
+                <iframe src={mapsEmbedSrc({ embed: clinic.google_maps_embed, address: clinic.address })!}
+                  loading="lazy" allowFullScreen
                   referrerPolicy="no-referrer-when-downgrade" title="Clinic location" />
               ) : (
                 <>

@@ -1,11 +1,11 @@
 import type { Clinic, Hours } from '@/lib/types';
 import { IconClock, IconMail, IconMap, IconPhone } from './Icons';
 import { todayHours, formatHourLabel } from '@/lib/util';
-import { safeMapsEmbed } from '@/lib/safe-url';
+import { mapsEmbedSrc } from '@/lib/safe-url';
 
 export default function LocationSection({ clinic, hours }: { clinic: Clinic; hours: Hours[] }) {
   const today = todayHours(hours);
-  const embedUrl = safeMapsEmbed(clinic.google_maps_embed);
+  const embedUrl = mapsEmbedSrc({ embed: clinic.google_maps_embed, address: clinic.address });
   return (
     <section className="sec" style={{ background: 'var(--white)' }}>
       <div className="sec-inner">

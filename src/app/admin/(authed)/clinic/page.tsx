@@ -160,8 +160,20 @@ export default async function ClinicAdminPage({ searchParams }: { searchParams: 
         <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 18, marginTop: 28, marginBottom: 12, color: 'var(--navy)' }}>
           Google Maps
         </h3>
-        <Field label="Maps embed URL (Google Maps → Share → Embed → copy src=)"
-          name="google_maps_embed" defaultValue={c.google_maps_embed ?? ''} />
+        <div className="form-group">
+          <label className="form-label">Map embed (optional)</label>
+          <textarea className="form-input form-textarea" name="google_maps_embed"
+            defaultValue={c.google_maps_embed ?? ''} style={{ minHeight: 90, fontFamily: 'monospace', fontSize: 12.5 }}
+            placeholder='Paste the whole <iframe …></iframe> from Google Maps → Share → "Embed a map" → Copy HTML' />
+          <div style={{ fontSize: 12.5, color: 'var(--text-3)', marginTop: 6, lineHeight: 1.6 }}>
+            On Google Maps, find your clinic → <strong>Share</strong> → <strong>Embed a map</strong> →
+            <strong> Copy HTML</strong> → paste it here. You can paste the entire code; we extract just
+            the map automatically. Any size is fine — the map always fills the box on the site.
+            <br />
+            <strong>Leave this blank</strong> to auto-generate a map from the clinic address above —
+            it then updates automatically whenever you change the address.
+          </div>
+        </div>
         <div style={{ marginTop: 16 }}>
           <button className="btn btn-navy btn-lg" type="submit">Save changes</button>
         </div>

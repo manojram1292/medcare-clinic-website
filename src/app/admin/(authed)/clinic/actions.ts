@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/auth';
 import { uploadImage } from '@/lib/upload';
+import { safeMapsEmbed } from '@/lib/safe-url';
 
 const Schema = z.object({
   name: z.string().min(1).max(120),
@@ -19,7 +20,7 @@ const Schema = z.object({
   hero_body: z.string().max(800),
   about_mission: z.string().max(1200),
   about_quote: z.string().max(500),
-  google_maps_embed: z.string().max(1000).optional().or(z.literal('')),
+  google_maps_embed: z.string().max(4000).optional().or(z.literal('')),
   parking_info: z.string().max(800).optional().or(z.literal('')),
   insurance_info: z.string().max(800).optional().or(z.literal('')),
   what_to_bring: z.string().max(800).optional().or(z.literal('')),
@@ -38,9 +39,14 @@ export async function saveClinic(formData: FormData) {
   const supabase = createClient();
   const langs = (parsed.data.languages_supported || '')
     .split(',').map((s) => s.trim()).filter(Boolean);
+  // Accept a full <iframe> paste or a bare URL; store the clean, validated
+  // src. Invalid / non-Google input is stored as null so the public site
+  // falls back to the address-derived map instead of a broken embed.
+  const rawEmbed = (parsed.data.google_maps_embed || '').trim();
+  const cleanEmbed = rawEmbed ? safeMapsEmbed(rawEmbed) : null;
   const payload = {
     ...parsed.data,
-    google_maps_embed: parsed.data.google_maps_embed || null,
+    google_maps_embed: cleanEmbed,
     parking_info: parsed.data.parking_info || null,
     insurance_info: parsed.data.insurance_info || null,
     what_to_bring: parsed.data.what_to_bring || null,
