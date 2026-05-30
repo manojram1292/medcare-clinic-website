@@ -91,6 +91,7 @@ export type Clinic = {
   about_quote: string;
   google_maps_embed: string | null;
   logo_url: string | null;
+  brand_scale: number;
   parking_info: string | null;
   insurance_info: string | null;
   what_to_bring: string | null;

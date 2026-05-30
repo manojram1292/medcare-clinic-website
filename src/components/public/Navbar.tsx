@@ -15,7 +15,7 @@ const links = [
   { label: 'Contact',      href: '/contact' },
 ];
 
-export default function Navbar({ clinicName, tagline, logoUrl }: { clinicName: string; tagline: string; logoUrl?: string | null }) {
+export default function Navbar({ clinicName, tagline, logoUrl, brandScale = 1 }: { clinicName: string; tagline: string; logoUrl?: string | null; brandScale?: number }) {
   const path = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mob, setMob] = useState(false);
@@ -50,7 +50,7 @@ export default function Navbar({ clinicName, tagline, logoUrl }: { clinicName: s
   return (
     <nav className={`site-nav ${scrolled ? 'scrolled' : ''}`}>
       <div className="nav-inner">
-        <Link className="nav-logo" href="/">
+        <Link className="nav-logo" href="/" style={{ ['--brand-scale' as string]: String(brandScale) } as React.CSSProperties}>
           {logoUrl
             ? <span className="nav-mark nav-mark-img"><Image src={logoUrl} alt={`${clinicName} logo`} width={40} height={40} style={{ objectFit: 'contain' }} priority /></span>
             : <div className="nav-mark"><CrossIcon/></div>}

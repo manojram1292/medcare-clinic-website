@@ -3,13 +3,20 @@ import { Flash } from '@/components/admin/Flash';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 import { getClinic } from '@/lib/data';
 import { requireAdmin } from '@/lib/auth';
-import { saveClinic, setWaitTime, saveStats, saveLogo } from './actions';
+import { BRAND_SIZE_OPTIONS } from '@/lib/appearance';
+import { saveClinic, setWaitTime, saveStats, saveLogo, saveAppearance } from './actions';
 
 export default async function ClinicAdminPage({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
   await requireAdmin('clinic');
   const c = await getClinic();
   const waitFresh = c.wait_updated_at && Date.now() - new Date(c.wait_updated_at).getTime() < 90 * 60 * 1000;
-  const okMsg = searchParams.ok === 'logo' ? 'Logo updated.' : searchParams.ok ? 'Saved.' : null;
+  const okMsg = searchParams.ok === 'logo' ? 'Logo updated.'
+    : searchParams.ok === 'appearance' ? 'Appearance updated.'
+    : searchParams.ok ? 'Saved.' : null;
+  // Match the stored scale to the nearest named option for the <select>
+  const selectedBrand = BRAND_SIZE_OPTIONS.reduce((best, o) =>
+    Math.abs(o.value - (c.brand_scale ?? 1)) < Math.abs(best.value - (c.brand_scale ?? 1)) ? o : best,
+    BRAND_SIZE_OPTIONS[0]).value;
   return (
     <>
       <h1 className="admin-h1">Clinic information</h1>
@@ -60,6 +67,38 @@ export default async function ClinicAdminPage({ searchParams }: { searchParams: 
             </div>
           </form>
         </div>
+      </div>
+
+      <div className="admin-card" style={{ borderLeft: '3px solid var(--teal)' }}>
+        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 18, marginBottom: 6, color: 'var(--navy)' }}>
+          Appearance
+        </h3>
+        <p style={{ fontSize: 13, color: 'var(--text-3)', marginBottom: 14 }}>
+          Choose how large the clinic name appears in the header and footer.
+          These are safe, fixed sizes so the layout always stays balanced.
+        </p>
+        <form action={saveAppearance} style={{ display: 'flex', gap: 10, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+          <div style={{ width: 220 }}>
+            <label className="form-label">Clinic name size</label>
+            <select className="form-input form-select" name="brand_scale" defaultValue={String(selectedBrand)}>
+              {BRAND_SIZE_OPTIONS.map((o) => (
+                <option key={o.value} value={String(o.value)}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+          <button className="btn btn-teal" type="submit">Save appearance</button>
+          <div aria-hidden style={{
+            fontFamily: 'var(--font-serif)', fontWeight: 700, color: 'var(--navy)',
+            fontSize: `calc(21px * ${c.brand_scale ?? 1})`, lineHeight: 1, marginLeft: 4,
+            whiteSpace: 'nowrap', alignSelf: 'center',
+          }}>
+            {c.name}
+          </div>
+        </form>
+        <p style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 10 }}>
+          Tip: with a long clinic name, very large sizes can crowd the menu on
+          mid-size screens — pick the size that looks balanced for your name.
+        </p>
       </div>
 
       <div className="admin-card" style={{ borderLeft: '3px solid var(--teal)' }}>

@@ -13,8 +13,8 @@ export default function Footer({ clinic, services }: { clinic: Clinic; services:
               {clinic.logo_url
                 ? <span className="nav-mark nav-mark-img"><Image src={clinic.logo_url} alt={`${clinic.name} logo`} width={40} height={40} style={{ objectFit: 'contain' }} /></span>
                 : <div className="nav-mark"><CrossIcon/></div>}
-              <div>
-                <div style={{ fontFamily: 'var(--font-serif)', fontSize: 20, fontWeight: 700, color: '#fff' }}>
+              <div style={{ ['--brand-scale' as string]: String(clinic.brand_scale ?? 1) } as React.CSSProperties}>
+                <div className="ft-brand-name">
                   {clinic.name}
                 </div>
                 <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--teal-light)',

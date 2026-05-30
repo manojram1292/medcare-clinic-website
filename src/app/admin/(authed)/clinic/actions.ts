@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/auth';
 import { uploadImage } from '@/lib/upload';
 import { safeMapsEmbed } from '@/lib/safe-url';
+import { clampBrandScale } from '@/lib/appearance';
 
 const Schema = z.object({
   name: z.string().min(1).max(120),
@@ -57,6 +58,17 @@ export async function saveClinic(formData: FormData) {
   if (error) redirect(`/admin/clinic?err=${encodeURIComponent(error.message)}`);
   revalidatePath('/', 'layout');
   redirect('/admin/clinic?ok=1');
+}
+
+export async function saveAppearance(formData: FormData) {
+  await requireAdmin('clinic');
+  const supabase = createClient();
+  const raw = Number(formData.get('brand_scale'));
+  const brand_scale = clampBrandScale(raw);
+  const { error } = await supabase.from('clinic').update({ brand_scale }).eq('id', 1);
+  if (error) redirect(`/admin/clinic?err=${encodeURIComponent(error.message)}`);
+  revalidatePath('/', 'layout');
+  redirect('/admin/clinic?ok=appearance');
 }
 
 export async function saveLogo(formData: FormData) {
